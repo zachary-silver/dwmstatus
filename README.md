@@ -1,10 +1,10 @@
-## dwmstatus
+# dwmstatus
 Prints the status information on the top right of the status bar.
 
 ![Screenshot](https://github.com/ZmanSilver/scripts/blob/master/screen.png)
 ![gif](dwmstatus.gif)
 
-# Installation and Execution Instructions
+## Installation and Execution Instructions
 dwmstatus requires dwm window manager from suckless (https://dwm.suckless.org/) running on Linux to work.
 
 From the cloned dwmstatus directory...
