@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -9,7 +8,6 @@
 /* Macros */
 #define TRUE 1
 #define FALSE 0
-#define MAX_SONG_TIME_OUTPUT 6
 #define NULL_JSON_FILE_SIZE 380
 #define JSON_TOKEN_DELIMS " :,\n{}\""
 
@@ -25,11 +23,6 @@ typedef enum {
 } SongQuery;
 
 /* Constants */
-static const char *const PauseIcon = "";
-static const char *const PlayIcon = "";
-/* static const char *const StopIcon = ""; */
-static const char *const LikedIcon = "";
-static const char *const DislikedIcon = "";
 static const char *const GPMDPFileName =
     "/home/zack/.config/Google Play Music Desktop Player/json_store/playback.json";
 static const char *const SongQueries[] =
@@ -112,41 +105,4 @@ void setValue(gpmdpSong *song, SongQuery query, char *value) {
        song->artist = value;
        break;
     }
-}
-
-void setSongIcons(gpmdpSong *song)
-{
-    if (song->liked) {
-        song->likeIcon = LikedIcon;
-    } else if (song->disliked) {
-        song->likeIcon = DislikedIcon;
-    } else {
-        song->likeIcon = "";
-    }
-
-    song->playIcon = song->playing ? PlayIcon : PauseIcon;
-}
-
-void setSongOutput(gpmdpSong *song)
-{
-    unsigned int secondsLeft, maxLength;
-
-    if (!song->active) {
-        (song->output)[0] = '\0';
-        return;
-    }
-
-    snprintf(song->output, MAX_SONG_OUTPUT, "%s%s%s %s - %s",
-             song->playIcon, (song->likeIcon)[0] != '\0' ? " " : "",
-             song->likeIcon, song->artist, song->title);
-
-    /* -2 to include room for a space and the nul terminator */
-    maxLength = MAX_SONG_OUTPUT - MAX_SONG_TIME_OUTPUT - 2;
-    if (strlen(song->output) > maxLength) {
-        strcpy(song->output + maxLength - 3, "...");
-    }
-
-    secondsLeft = song->totalSeconds - song->currentSeconds;
-    snprintf(song->output + strlen(song->output), MAX_SONG_TIME_OUTPUT + 2,
-             " %d:%02d", secondsLeft / 60, secondsLeft % 60);
 }

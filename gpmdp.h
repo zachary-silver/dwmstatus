@@ -22,7 +22,5 @@ typedef struct {
 
 /* Function prototypes */
 void setSong(gpmdpSong *song);
-void setSongIcons(gpmdpSong *song);
-void setSongOutput(gpmdpSong *song);
 
 #endif

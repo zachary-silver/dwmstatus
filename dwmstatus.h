@@ -65,24 +65,13 @@ typedef struct {
 } dwmStatus;
 
 /* Function prototypes */
-void output(dwmStatus *status);
 void setBattery(dwmBattery *battery);
-void setBatteryIcon(dwmBattery *battery);
 void setMemory(dwmMemory *memory);
-void setMemoryIcon(dwmMemory *memory);
 void setVolume(dwmVolume *volume);
-void setVolumeIcon(dwmVolume *volume);
 void setWifi(dwmWifi *wifi);
-void setWifiIcon(dwmWifi *wifi);
 void setCPU(dwmCPU *cpu);
-void setCPUIcon(dwmCPU *cpu);
 void setDisk(dwmDisk *disk);
-void setDiskIcon(dwmDisk *disk);
 void setDate(dwmDate *date);
-void setDateIcon(dwmDate *date);
-void setDateFormat(dwmDate *date);
 void setTime(dwmTime *time);
-void setTimeIcon(dwmTime *time);
-void setTimeFormat(dwmTime *time);
 
 #endif

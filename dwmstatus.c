@@ -25,23 +25,6 @@
 #define LENGTH_OF(x) (int)(sizeof(x) / sizeof((x)[0]))
 
 /* Constants */
-static const char *const WifiIcon = "";
-static const char *const MemoryIcon = "";
-static const char *const DiskIcon = "";
-static const char *const CPUIcon = "";
-static const char *const SpeakerIconUnmuted = "";
-static const char *const SpeakerIconMuted = "";
-static const char *const DateIcon = "";
-static const char *const TimeIcon = "";
-static const char *const TimeIconWithSpace = " ";
-static const char *const BatteryIconCharging = "";
-static const char *const BatteryIcon100 = "";
-static const char *const BatteryIcon75 = "";
-static const char *const BatteryIcon50 = "";
-static const char *const BatteryIcon25 = "";
-static const char *const BatteryIcon0 = "";
-static const char *const TimeFormat = "%l:%M %p";
-static const char *const DateFormat = "%a %b/%d/%Y";
 static const char *const WirelessInterface = "wlp4s0";
 static const char *const CurrentBatteryFiles[] =
 {
@@ -63,6 +46,16 @@ static const char *const StatusBatteryFiles[] =
 unsigned long getBatteryValue(const char *fileName);
 int batteryCharging(const char *fileName);
 int getQualityLinkValue(char *wirelessInterfaceInfo);
+
+/*
+ * Equivalent to xsetroot -name $(status_output) in bash
+ */
+void output(dwmStatus *status)
+{
+    XStoreName(status->display, DefaultRootWindow(status->display),
+               status->output);
+    XSync(status->display, False);
+}
 
 /*
  * In conditions where values can't be read from files
@@ -116,31 +109,6 @@ int batteryCharging(const char *fileName)
     return strcmp(status, "Charging\n") == 0;
 }
 
-void setBatteryIcon(dwmBattery *battery)
-{
-    if (battery->charging) {
-        battery->icon = BatteryIconCharging;
-    } else {
-        switch ((int)battery->percent) {
-        case 90 ... 100:
-            battery->icon = BatteryIcon100;
-            break;
-        case 60 ... 89:
-            battery->icon = BatteryIcon75;
-            break;
-        case 30 ... 59:
-            battery->icon = BatteryIcon50;
-            break;
-        case 10 ... 29:
-            battery->icon = BatteryIcon25;
-            break;
-        default:
-            battery->icon = BatteryIcon0;
-            break;
-        }
-    }
-}
-
 /*
  * Ignores the first column of /proc/stat's output which only
  * contains the string 'cpu' and reads the next 7 columns
@@ -179,29 +147,9 @@ void setCPU(dwmCPU *cpu)
     cpu->utilization = 100 * (loadDelta - idleDelta) / (float)loadDelta;
 }
 
-void setCPUIcon(dwmCPU *cpu)
-{
-    cpu->icon = CPUIcon;
-}
-
 void setTime(dwmTime *time)
 {
    setDate(time);
-}
-
-/*
- * Provides consistent spacing between the time icon and time value
- * for both single and double digit hours throughout the day.
- * All double digit hours are prefixed with an empty space.
- */
-void setTimeIcon(dwmTime *time)
-{
-    time->icon = time->output[0] != ' ' ? TimeIconWithSpace : TimeIcon;
-}
-
-void setTimeFormat(dwmTime *time)
-{
-    time->format = TimeFormat;
 }
 
 void setDate(dwmDate *date)
@@ -210,16 +158,6 @@ void setDate(dwmDate *date)
 
     strftime(date->output, MAX_DATE_OUTPUT,
              date->format, localtime(&currentTime));
-}
-
-void setDateIcon(dwmDate *date)
-{
-    date->icon = DateIcon;
-}
-
-void setDateFormat(dwmDate *date)
-{
-    date->format = DateFormat;
 }
 
 void setDisk(dwmDisk *disk)
@@ -234,11 +172,6 @@ void setDisk(dwmDisk *disk)
     disk->usedBytes = disk->totalBytes - (diskInfo.f_bfree * diskInfo.f_bsize);
 }
 
-void setDiskIcon(dwmDisk *disk)
-{
-    disk->icon = DiskIcon;
-}
-
 void setMemory(dwmMemory *memory)
 {
     struct sysinfo sysInfo;
@@ -249,11 +182,6 @@ void setMemory(dwmMemory *memory)
 
     memory->usedBytes = (sysInfo.totalram - sysInfo.freeram);
     memory->totalBytes = sysInfo.totalram;
-}
-
-void setMemoryIcon(dwmMemory *memory)
-{
-    memory->icon = MemoryIcon;
 }
 
 /*
@@ -288,11 +216,6 @@ void setVolume(dwmVolume *volume)
     snd_mixer_close(handle);
 
     volume->percent = ((double)volume->current / volume->max) * 100;
-}
-
-void setVolumeIcon(dwmVolume *volume)
-{
-    volume->icon = volume->muted ? SpeakerIconUnmuted : SpeakerIconMuted;
 }
 
 /*
@@ -339,19 +262,4 @@ int getQualityLinkValue(char *interfaceInfo)
     result = strtok(NULL, " .");
 
     return atoi(result);
-}
-
-void setWifiIcon(dwmWifi *wifi)
-{
-    wifi->icon = WifiIcon;
-}
-
-/*
- * Equivalent to xsetroot -name $(status_output) in bash
- */
-void output(dwmStatus *status)
-{
-    XStoreName(status->display, DefaultRootWindow(status->display),
-               status->output);
-    XSync(status->display, False);
 }

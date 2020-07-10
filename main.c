@@ -3,11 +3,9 @@
 #include <string.h>
 
 #include "dwmstatus.h"
+#include "ui.h"
 #include "gpmdp.h"
-
-static const float Gigabyte = 1024 * 1024 * 1024;
-
-void setOutput(dwmStatus *status);
+#include "gpmdp_ui.h"
 
 int main(void)
 {
@@ -40,6 +38,7 @@ loop:
     setWifi(&status.wifi);
     setSong(&song);
     setSongIcons(&song);
+
     setSongOutput(&song);
     snprintf(status.output, MAX_STATUS_OUTPUT, "%s  ", song.output);
     setOutput(&status);
@@ -48,43 +47,4 @@ loop:
 
     nanosleep(&sleepTime, NULL);
     goto loop;
-}
-
-void setOutput(dwmStatus *status)
-{
-    int volume, usedMemory, totalMemory, usedDisk, totalDisk, outputLength;
-
-    volume = status->volume.percent + 0.5;
-    usedMemory = status->memory.usedBytes / Gigabyte + 0.5;
-    totalMemory = status->memory.totalBytes / Gigabyte + 0.5;
-    usedDisk = status->disk.usedBytes / Gigabyte + 0.5;
-    totalDisk = status->disk.totalBytes / Gigabyte + 0.5;
-
-    if (status->wifi.active) {
-        outputLength = strlen(status->output);
-        snprintf(status->output + outputLength,
-                 MAX_STATUS_OUTPUT - outputLength,
-                 "%s %.1f%%  ", status->wifi.icon, status->wifi.strength);
-    }
-
-    outputLength = strlen(status->output);
-    snprintf(status->output + outputLength, MAX_STATUS_OUTPUT - outputLength,
-             "%s %.1f%%  %s %d/%dG  %s %d/%dG  %s %d%%  ",
-             status->cpu.icon, status->cpu.utilization,
-             status->memory.icon, usedMemory, totalMemory,
-             status->disk.icon, usedDisk, totalDisk,
-             status->volume.icon, volume);
-
-    if (status->battery.active) {
-        outputLength = strlen(status->output);
-        snprintf(status->output + outputLength,
-                 MAX_STATUS_OUTPUT - outputLength, "%s %.0f%%  ",
-                 status->battery.icon, status->battery.percent);
-    }
-
-    outputLength = strlen(status->output);
-    snprintf(status->output + outputLength, MAX_STATUS_OUTPUT - outputLength,
-             "%s %s  %s%s",
-             status->date.icon, status->date.output,
-             status->time.icon, status->time.output);
 }
