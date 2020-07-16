@@ -20,7 +20,7 @@ static const char *const BatteryIcon50 = "";
 static const char *const BatteryIcon25 = "";
 static const char *const BatteryIcon0 = "";
 static const char *const TimeFormat = "%l:%M %p";
-static const char *const DateFormat = "%a %m/%d/%Y";
+static const char *const DateFormat = "%A, %B %_d %Y";
 static const float Gigabyte = 1024 * 1024 * 1024;
 
 void setOutput(dwmStatus *status)
