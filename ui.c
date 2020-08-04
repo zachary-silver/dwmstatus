@@ -32,11 +32,13 @@ static const float Gigabyte = 1024 * 1024 * 1024;
 
 void setOutput(dwmStatus *status)
 {
-    int volume, usedMemory, totalMemory, outputLength;
+    int volume, usedMemory, totalMemory, usedDisk, totalDisk, outputLength;
 
     volume = status->volume.percent + 0.5;
     usedMemory = status->memory.usedBytes / Gigabyte + 0.5;
     totalMemory = status->memory.totalBytes / Gigabyte + 0.5;
+    usedDisk = status->disk.usedBytes / Gigabyte + 0.5;
+    totalDisk = status->disk.totalBytes / Gigabyte + 0.5;
 
     if (status->wifi.active) {
         outputLength = strlen(status->output);
@@ -47,9 +49,10 @@ void setOutput(dwmStatus *status)
 
     outputLength = strlen(status->output);
     snprintf(status->output + outputLength, MAX_STATUS_OUTPUT - outputLength,
-             "%s%s%s %.1f%%  %s%s%s %d/%dG  %s%s%s %d%%  ",
+             "%s%s%s %.1f%%  %s%s%s %d/%dG  %s%s%s %d/%dG  %s%s%s %d%%  ",
              BlueFG, status->cpu.icon, SchemeReset, status->cpu.utilization,
              BlueFG, status->memory.icon, SchemeReset, usedMemory, totalMemory,
+             BlueFG, status->disk.icon, SchemeReset, usedDisk, totalDisk,
              BlueFG, status->volume.icon, SchemeReset, volume);
 
     if (status->battery.active) {
