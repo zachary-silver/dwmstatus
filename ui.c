@@ -21,9 +21,19 @@ static const char *const BatteryIcon25 = "";
 static const char *const BatteryIcon0 = "";
 static const char *const TimeFormat = "%l:%M %p";
 static const char *const DateFormat = "%A, %B %d %Y";
+static const char *const CyanFG = "^c#75b7bf^";
+static const char *const LightCyanFG = "^c#88c9d1^";
+static const char *const MagentaFG = "^c#ba5d89^";
+static const char *const LightMagentaFG = "^c#cc6c99^";
+static const char *const YellowFG = "^c#edbf53^";
+static const char *const LightYellowFG = "^c#f0c665^";
+static const char *const GreenFG = "^c#48a374^";
+static const char *const LightGreenFG = "^c#5aad82^";
+static const char *const RedFG = "^c#f28a4a^";
+static const char *const LightRedFG = "^c#eb8e54^";
 static const char *const BlueFG = "^c#4e8cb7^";
 static const char *const LightBlueFG = "^c#68a7d4^";
-static const char *const WhiteFG = "^c#ffffff^";
+static const char *const WhiteFG = "^c#d1c9c9^";
 static const char *const BlackFG = "^c#4d5261^";
 static const char *const PinkFG = "^c#f7a8b8^";
 static const char *const OrangeFG = "^c#eb8e54^";
@@ -39,34 +49,36 @@ void setOutput(dwmStatus *status)
     totalMemory = status->memory.totalBytes / Gigabyte + 0.5;
     usedDisk = status->disk.usedBytes / Gigabyte + 0.5;
     totalDisk = status->disk.totalBytes / Gigabyte + 0.5;
+    status->output[0] = 0;
+    outputLength = 0;
 
     if (status->wifi.active) {
         outputLength = strlen(status->output);
         snprintf(status->output + outputLength,
                  MAX_STATUS_OUTPUT - outputLength,
-                 "%s%s%s %.1f%%  ", BlueFG, status->wifi.icon, SchemeReset, status->wifi.strength);
+                 " %s%s%s %.1f%% ", LightBlueFG, status->wifi.icon, SchemeReset, status->wifi.strength);
     }
 
     outputLength = strlen(status->output);
     snprintf(status->output + outputLength, MAX_STATUS_OUTPUT - outputLength,
-             "%s%s%s %.1f%%  %s%s%s %d/%dG  %s%s%s %d/%dG  %s%s%s %d%%  ",
-             BlueFG, status->cpu.icon, SchemeReset, status->cpu.utilization,
-             BlueFG, status->memory.icon, SchemeReset, usedMemory, totalMemory,
-             BlueFG, status->disk.icon, SchemeReset, usedDisk, totalDisk,
-             BlueFG, status->volume.icon, SchemeReset, volume);
+             " %s%s%s %.1f%%  %s%s%s %d/%dG  %s%s%s %d/%dG  %s%s%s %d%%  ",
+             LightBlueFG, status->cpu.icon, SchemeReset, status->cpu.utilization,
+             LightBlueFG, status->memory.icon, SchemeReset, usedMemory, totalMemory,
+             LightBlueFG, status->disk.icon, SchemeReset, usedDisk, totalDisk,
+             LightBlueFG, status->volume.icon, SchemeReset, volume);
 
     if (status->battery.active) {
         outputLength = strlen(status->output);
         snprintf(status->output + outputLength,
                  MAX_STATUS_OUTPUT - outputLength, "%s%s%s %.0f%%  ",
-                 BlueFG, status->battery.icon, SchemeReset, status->battery.percent);
+                 LightBlueFG, status->battery.icon, SchemeReset, status->battery.percent);
     }
 
     outputLength = strlen(status->output);
     snprintf(status->output + outputLength, MAX_STATUS_OUTPUT - outputLength,
-             "%s%s%s %s  %s%s%s%s",
-             BlueFG, status->date.icon, SchemeReset, status->date.output,
-             BlueFG, status->time.icon, SchemeReset, status->time.output);
+             "%s%s%s %s  %s%s%s%s      ",
+             LightBlueFG, status->date.icon, SchemeReset, status->date.output,
+             LightBlueFG, status->time.icon, SchemeReset, status->time.output);
 }
 
 void setDateFormat(dwmDate *date)
