@@ -19,8 +19,8 @@ static const char *const BatteryIcon75 = "";
 static const char *const BatteryIcon50 = "";
 static const char *const BatteryIcon25 = "";
 static const char *const BatteryIcon0 = "";
-static const char *const TimeFormat = "%l:%M %p";
-static const char *const DateFormat = "%A, %B %d %Y";
+static const char *const TimeFormat = "%R";
+static const char *const DateFormat = "%A %x";
 static const char *const CyanFG = "^c#75b7bf^";
 static const char *const LightCyanFG = "^c#88c9d1^";
 static const char *const MagentaFG = "^c#ba5d89^";
@@ -42,15 +42,14 @@ static const float Gigabyte = 1024 * 1024 * 1024;
 
 void setOutput(dwmStatus *status)
 {
-    int volume, usedMemory, totalMemory, usedDisk, totalDisk, outputLength;
+    int volume, outputLength;
+    float memory, disk;
 
     volume = status->volume.percent + 0.5;
-    usedMemory = status->memory.usedBytes / Gigabyte + 0.5;
-    totalMemory = status->memory.totalBytes / Gigabyte + 0.5;
-    usedDisk = status->disk.usedBytes / Gigabyte + 0.5;
-    totalDisk = status->disk.totalBytes / Gigabyte + 0.5;
+    memory = (float)status->memory.usedBytes / status->memory.totalBytes * 100;
+    disk = (float)status->disk.usedBytes / status->disk.totalBytes * 100;
+
     status->output[0] = 0;
-    outputLength = 0;
 
     if (status->wifi.active) {
         outputLength = strlen(status->output);
@@ -61,10 +60,10 @@ void setOutput(dwmStatus *status)
 
     outputLength = strlen(status->output);
     snprintf(status->output + outputLength, MAX_STATUS_OUTPUT - outputLength,
-             " %s%s%s %.1f%%  %s%s%s %d/%dG  %s%s%s %d/%dG  %s%s%s %d%%  ",
+             " %s%s%s %.1f%%  %s%s%s %.0f%%  %s%s%s %.0f%%  %s%s%s %d%%  ",
              LightBlueFG, status->cpu.icon, SchemeReset, status->cpu.utilization,
-             LightBlueFG, status->memory.icon, SchemeReset, usedMemory, totalMemory,
-             LightBlueFG, status->disk.icon, SchemeReset, usedDisk, totalDisk,
+             LightBlueFG, status->memory.icon, SchemeReset, memory,
+             LightBlueFG, status->disk.icon, SchemeReset, disk,
              LightBlueFG, status->volume.icon, SchemeReset, volume);
 
     if (status->battery.active) {
