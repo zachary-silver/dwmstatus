@@ -64,7 +64,7 @@ void setOutput(dwmStatus *status)
         outputLength = strlen(status->output);
         snprintf(status->output + outputLength,
                  MAX_STATUS_OUTPUT - outputLength,
-                 "          ",
+                 "           ",
                  LightBlueFG, status->wifi.icon, SchemeReset);
     }
 
