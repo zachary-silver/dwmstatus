@@ -10,6 +10,7 @@
 /* Typedefs */
 typedef struct {
     int active;
+    int capable;
     float strength;
     const char *icon;
 } dwmWifi;

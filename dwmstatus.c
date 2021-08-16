@@ -244,6 +244,7 @@ void setWifi(dwmWifi *wifi)
         return;
     }
 
+    wifi->capable = TRUE;
     wifi->active = TRUE;
     wifi->strength = getQualityLinkValue(interfaceInfo) * 100 / 70.0;
 }

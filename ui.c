@@ -43,11 +43,14 @@ static const float Gigabyte = 1024 * 1024 * 1024;
 void setOutput(dwmStatus *status)
 {
     int volume, outputLength;
-    float memory, disk;
+    float memory, disk, cpu, wifi, battery;
 
     volume = status->volume.percent + 0.5;
     memory = (float)status->memory.usedBytes / status->memory.totalBytes * 100;
     disk = (float)status->disk.usedBytes / status->disk.totalBytes * 100;
+    cpu = status->cpu.utilization;
+    wifi = status->wifi.strength;
+    battery = status->battery.percent;
 
     status->output[0] = 0;
 
@@ -55,13 +58,20 @@ void setOutput(dwmStatus *status)
         outputLength = strlen(status->output);
         snprintf(status->output + outputLength,
                  MAX_STATUS_OUTPUT - outputLength,
-                 " %s%s%s %.1f%% ", LightBlueFG, status->wifi.icon, SchemeReset, status->wifi.strength);
+                 " %s%s%s %.1f%% ",
+                 LightBlueFG, status->wifi.icon, SchemeReset, wifi);
+    } else if (status->wifi.capable) {
+        outputLength = strlen(status->output);
+        snprintf(status->output + outputLength,
+                 MAX_STATUS_OUTPUT - outputLength,
+                 "          ",
+                 LightBlueFG, status->wifi.icon, SchemeReset);
     }
 
     outputLength = strlen(status->output);
     snprintf(status->output + outputLength, MAX_STATUS_OUTPUT - outputLength,
              " %s%s%s %.1f%%  %s%s%s %.0f%%  %s%s%s %.0f%%  %s%s%s %d%%  ",
-             LightBlueFG, status->cpu.icon, SchemeReset, status->cpu.utilization,
+             LightBlueFG, status->cpu.icon, SchemeReset, cpu,
              LightBlueFG, status->memory.icon, SchemeReset, memory,
              LightBlueFG, status->disk.icon, SchemeReset, disk,
              LightBlueFG, status->volume.icon, SchemeReset, volume);
@@ -69,8 +79,9 @@ void setOutput(dwmStatus *status)
     if (status->battery.active) {
         outputLength = strlen(status->output);
         snprintf(status->output + outputLength,
-                 MAX_STATUS_OUTPUT - outputLength, "%s%s%s %.0f%%  ",
-                 LightBlueFG, status->battery.icon, SchemeReset, status->battery.percent);
+                 MAX_STATUS_OUTPUT - outputLength,
+                 "%s%s%s %.0f%%  ",
+                 LightBlueFG, status->battery.icon, SchemeReset, battery);
     }
 
     outputLength = strlen(status->output);
