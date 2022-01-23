@@ -1,4 +1,9 @@
-use std::{collections::HashMap, thread, io::Error, sync::{Arc, Mutex}};
+use std::{
+    collections::HashMap,
+    io::Error,
+    sync::{Arc, Mutex},
+    thread,
+};
 
 use signal_hook::consts::signal::*;
 
@@ -23,7 +28,7 @@ fn main() -> Result<(), Error> {
                     eprintln!("{}", err);
                 }
                 output::output_statuses(statuses.iter());
-            },
+            }
             _ => break,
         }
     }
@@ -50,22 +55,29 @@ fn get_statuses(index_map: &HashMap<StatusType, usize>) -> Vec<Box<dyn Status>> 
     let mut index_map: Vec<(&StatusType, &usize)> = index_map.iter().collect();
 
     index_map.sort_by_key(|(_, index)| *index);
-    index_map.iter().map(|(status_type, _)| -> Box<dyn Status> {
-        match status_type {
-            StatusType::Audio => Box::new(audio::Audio::new("default", "Master")
-                .expect("Failed to create Audio status")),
-            StatusType::Battery => Box::new(battery::Battery::new()
-                .expect("Failed to create Battery status")),
-            StatusType::Cpu => Box::new(cpu::Cpu::new()),
-            StatusType::Date => Box::new(date::Date::new()),
-            StatusType::Disk => Box::new(disk::Disk::new("/")
-                .expect("Failed to create Disk status")),
-            StatusType::Memory => Box::new(memory::Memory::new()),
-            StatusType::Time => Box::new(time::Time::new()),
-            StatusType::Wifi => Box::new(wifi::Wifi::new("wlp4s0")
-                .expect("Failed to create Wifi status")),
-        }
-    }).collect()
+    index_map
+        .iter()
+        .map(|(status_type, _)| -> Box<dyn Status> {
+            match status_type {
+                StatusType::Audio => Box::new(
+                    audio::Audio::new("default", "Master").expect("Failed to create Audio status"),
+                ),
+                StatusType::Battery => {
+                    Box::new(battery::Battery::new().expect("Failed to create Battery status"))
+                }
+                StatusType::Cpu => Box::new(cpu::Cpu::new()),
+                StatusType::Date => Box::new(date::Date::new()),
+                StatusType::Disk => {
+                    Box::new(disk::Disk::new("/").expect("Failed to create Disk status"))
+                }
+                StatusType::Memory => Box::new(memory::Memory::new()),
+                StatusType::Time => Box::new(time::Time::new()),
+                StatusType::Wifi => {
+                    Box::new(wifi::Wifi::new("wlp4s0").expect("Failed to create Wifi status"))
+                }
+            }
+        })
+        .collect()
 }
 
 fn run_app(statuses: Arc<Mutex<Vec<Box<dyn Status>>>>) {

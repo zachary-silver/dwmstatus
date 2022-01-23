@@ -10,8 +10,6 @@ pub struct Wifi {
 
 impl Wifi {
     pub fn new(interface_name: &str) -> Result<Self, Box<dyn Error>> {
-        verify(interface_name)?;
-
         Ok(Wifi {
             active: false,
             strength: 0.0,
@@ -42,22 +40,4 @@ impl Status for Wifi {
 
         Ok(())
     }
-}
-
-fn verify(interface_name: &str) -> Result<(), Box<dyn Error>> {
-    let contents = fs::read_to_string("/proc/net/wireless")?;
-
-    for line in contents.lines().skip(2) {
-        let mut values = line.split_whitespace();
-
-        if values.next().unwrap().contains(interface_name) {
-            return Ok(());
-        }
-    }
-
-    Err(format!(
-        "Interface '{}' does not exist in /proc/net/wireless!",
-        interface_name
-    )
-    .into())
 }

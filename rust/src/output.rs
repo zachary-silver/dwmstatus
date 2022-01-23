@@ -7,7 +7,7 @@ static DEFAULT_COLOR_FORMAT: &'static str = "^d^";
 
 pub fn output_statuses<'a, T>(statuses: T)
 where
-    T: Iterator<Item=&'a Box<dyn Status>>
+    T: Iterator<Item = &'a Box<dyn Status>>,
 {
     let status_outputs: Vec<String> = statuses.map(|status| status.to_string()).collect();
 
@@ -126,13 +126,17 @@ impl fmt::Display for time::Time {
 
 impl fmt::Display for wifi::Wifi {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{0}{icon} {1}{value:.1}%",
-            LIGHT_BLUE_COLOR_FORMAT,
-            DEFAULT_COLOR_FORMAT,
-            icon = '',
-            value = self.strength,
-        )
+        if self.active {
+            write!(
+                f,
+                "{0}{icon} {1}{value:.1}%",
+                LIGHT_BLUE_COLOR_FORMAT,
+                DEFAULT_COLOR_FORMAT,
+                icon = '',
+                value = self.strength,
+            )
+        } else {
+            write!(f, "")
+        }
     }
 }

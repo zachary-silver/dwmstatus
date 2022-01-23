@@ -1,11 +1,11 @@
-use std::{io::Error};
-use std::sync::{Arc, atomic::AtomicBool};
+use std::io::Error;
+use std::sync::{atomic::AtomicBool, Arc};
 
 use signal_hook::consts::signal::*;
 use signal_hook::consts::TERM_SIGNALS;
 use signal_hook::flag;
-use signal_hook::iterator::SignalsInfo;
 use signal_hook::iterator::exfiltrator::origin::WithOrigin;
+use signal_hook::iterator::SignalsInfo;
 
 pub fn get_signals() -> Result<SignalsInfo<WithOrigin>, Error> {
     let term_now = Arc::new(AtomicBool::new(false));

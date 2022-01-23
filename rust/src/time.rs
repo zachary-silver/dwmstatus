@@ -11,7 +11,7 @@ pub struct Time {
 impl Time {
     pub fn new() -> Self {
         Time {
-            timestamp: Local::now()
+            timestamp: Local::now(),
         }
     }
 }

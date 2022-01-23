@@ -48,7 +48,7 @@ pub trait Status: fmt::Display + Send {
 
 pub fn update_statuses<'a, T>(statuses: T)
 where
-    T: Iterator<Item=&'a mut Box<dyn Status>>
+    T: Iterator<Item = &'a mut Box<dyn Status>>,
 {
     for status in statuses {
         if let Err(err) = status.update() {
