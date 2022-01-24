@@ -1,5 +1,8 @@
 [package]
 name = "dwmstatus"
+description = "A program for retrieving system information and setting the dwm status bar output"
+licence = "MIT"
+authors = ["Zachary Silver <zmansilver@gmail.com>"]
 version = "0.1.0"
 edition = "2021"
 
