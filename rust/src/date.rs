@@ -1,3 +1,6 @@
+//! The ```date``` module provides a struct containing information related to the
+//! current date, such as the local timestamp.
+
 use std::error::Error;
 
 use chrono::{DateTime, Local};

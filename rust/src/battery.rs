@@ -1,3 +1,7 @@
+//! The ```battery``` module provides a struct containing fields related to the
+//! system's batteries such as current and capacity watt hours, as well as the
+//! current charging status.
+
 use std::{error::Error, fs, path::Path};
 
 use crate::Status;
@@ -6,19 +10,31 @@ pub struct Battery {
     pub capacity_watt_hours: u64,
     pub current_watt_hours: u64,
     pub charging: bool,
-    pub percent: f32,
     capacity_battery_files: Vec<String>,
     current_battery_files: Vec<String>,
     status_battery_files: Vec<String>,
 }
 
 impl Battery {
+    /// # Errors
+    ///
+    /// This method will return an ```Error``` if
+    /// the ```/sys/class/power_supply``` directory doesn't exist or
+    /// can't be opened for reading. It will also return an ```Error``` if it
+    /// can't open its subdirectories and files for reading, or no battery
+    /// files can be found in those subdirectories.
+    ///
+    /// Minimum expected battery files are:
+    /// ```
+    /// /sys/class/power_supply/BAT0/energy_now
+    /// /sys/class/power_supply/BAT0/energy_full
+    /// /sys/class/power_supply/BAT0/status
+    /// ```
     pub fn new() -> Result<Self, Box<dyn Error>> {
         let mut battery = Battery {
             capacity_watt_hours: 0,
             current_watt_hours: 0,
             charging: false,
-            percent: 0.0,
             capacity_battery_files: Vec::new(),
             current_battery_files: Vec::new(),
             status_battery_files: Vec::new(),
@@ -55,6 +71,13 @@ impl Battery {
 }
 
 impl Status for Battery {
+    /// # Errors
+    ///
+    /// This method will return an ```Error``` if any of the battery
+    /// files can't be opened for reading.
+    ///
+    /// Please refer the ```Battery::new```'s documentation for the
+    /// minimum set of required battery files.
     fn update(&mut self) -> Result<(), Box<dyn Error>> {
         self.current_watt_hours = 0;
         self.capacity_watt_hours = 0;
@@ -73,9 +96,6 @@ impl Status for Battery {
                 break;
             }
         }
-
-        self.percent =
-            ((self.current_watt_hours as f64) / (self.capacity_watt_hours as f64) * 100.0) as f32;
 
         Ok(())
     }

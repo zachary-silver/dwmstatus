@@ -1,3 +1,6 @@
+//! The ```cpu``` module provides a struct containing information related to the
+//! system's cpu, such as total utilization.
+
 use std::{error::Error, fs, ops::Sub};
 
 use crate::Status;
@@ -19,9 +22,16 @@ impl Cpu {
 }
 
 impl Status for Cpu {
-    // The correctness of this update function depends on previous values of
-    // the calling Cpu struct's properties read from /proc/stat. As a result,
-    // the first call to update for a Cpu struct will always yield incorrect results.
+    /// The correctness of this update function depends on previous values of
+    /// the calling ```Cpu``` struct's properties read from ```/proc/stat```.
+    ///
+    /// As a result, the first call to update for a ```Cpu``` struct will always
+    /// yield incorrect results.
+    ///
+    /// # Errors
+    ///
+    /// This method returns an ```Error``` if ```/proc/stat``` cannot be opened
+    /// for reading.
     fn update(&mut self) -> Result<(), Box<dyn Error>> {
         let contents = fs::read_to_string("/proc/stat")?;
         let line = contents.lines().next().unwrap();

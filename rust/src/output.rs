@@ -1,3 +1,7 @@
+//! The ```output``` module provides default ```fmt::Display``` implementations
+//! for the different ```Status``` structs in the crate as well as
+//! the ```output_statuses``` function for convenience.
+
 use std::fmt;
 
 use crate::*;
@@ -5,6 +9,8 @@ use crate::*;
 static LIGHT_BLUE_COLOR_FORMAT: &'static str = "^c#68a7d4^";
 static DEFAULT_COLOR_FORMAT: &'static str = "^d^";
 
+/// This function will call ```dwmstatus::set_status_bar`` with the outputs of all
+/// the ```Status``` implementors found in the given ```statuses``` iterator.
 pub fn output_statuses<'a, T>(statuses: T)
 where
     T: Iterator<Item = &'a Box<dyn Status>>,
@@ -29,17 +35,18 @@ impl fmt::Display for audio::Audio {
             LIGHT_BLUE_COLOR_FORMAT,
             DEFAULT_COLOR_FORMAT,
             icon = if self.muted { '' } else { '' },
-            value = self.percent_volume,
+            value = self.current_volume as f64 / self.max_volume as f64 * 100.0,
         )
     }
 }
 
 impl fmt::Display for battery::Battery {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let percent = self.current_watt_hours as f64 / self.capacity_watt_hours as f64 * 100.0;
         let icon = if self.charging {
             ''
         } else {
-            match self.percent as u16 {
+            match percent as u16 {
                 90..=100 => '',
                 60..=89 => '',
                 30..=59 => '',
@@ -54,7 +61,7 @@ impl fmt::Display for battery::Battery {
             LIGHT_BLUE_COLOR_FORMAT,
             DEFAULT_COLOR_FORMAT,
             icon = icon,
-            value = self.percent as u16,
+            value = percent as u16,
         )
     }
 }

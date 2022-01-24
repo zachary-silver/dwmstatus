@@ -1,3 +1,6 @@
+//! The ```memory``` module provides a struct containing information related to
+//! the system's RAM modules, such as the number of free and total kibibytes.
+
 use std::{error::Error, fs};
 
 use crate::Status;
@@ -17,6 +20,10 @@ impl Memory {
 }
 
 impl Status for Memory {
+    /// # Errors
+    ///
+    /// This method will return an ```Error``` if ```/proc/meminfo``` can't
+    /// be opened for reading.
     fn update(&mut self) -> Result<(), Box<dyn Error>> {
         let contents = fs::read_to_string("/proc/meminfo")?;
         let mut lines = contents.lines();

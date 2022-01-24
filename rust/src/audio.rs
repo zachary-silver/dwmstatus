@@ -1,3 +1,7 @@
+//! The ```audio``` module provides a struct containing information related to
+//! a system's sound card and audio channel, such as current, maximum, and
+//! minimum volume, as well as the mute status.
+
 use std::{error::Error, ffi::CString, mem::MaybeUninit};
 
 use alsa_sys::*;
@@ -9,7 +13,6 @@ pub struct Audio {
     pub max_volume: i64,
     pub min_volume: i64,
     pub muted: bool,
-    pub percent_volume: f32,
     card_name: CString,
     channel_name: CString,
     handle_ptr: *mut snd_mixer_t,
@@ -17,13 +20,32 @@ pub struct Audio {
 }
 
 impl Audio {
+    /// Where ```card_name``` is the name of the sound card in your system.
+    ///
+    /// Where ```channel_name``` is the name of the audio channel.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let audio_status = Audio::new("default", "Master");
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// If the given ```card_name``` or ```channel_name``` are invalid (either
+    /// they do not exist, can't be found, or can't be used to create a
+    /// valid ```CString``` type), this method will return an Error
+    /// containing a message describing what went wrong.
+    ///
+    /// A handful of other Errors may be returned if dependent alsa-sys library
+    /// function calls fail for other unknown reasons.
+    ///
     pub fn new(card_name: &str, channel_name: &str) -> Result<Self, Box<dyn Error>> {
         let mut audio = Audio {
             current_volume: 0,
             max_volume: 0,
             min_volume: 0,
             muted: false,
-            percent_volume: 0.0,
             card_name: CString::new(card_name)?,
             channel_name: CString::new(channel_name)?,
             handle_ptr: unsafe { MaybeUninit::uninit().assume_init() },
@@ -101,6 +123,12 @@ impl Drop for Audio {
 }
 
 impl Status for Audio {
+    /// # Errors
+    ///
+    /// This method will return an ```Error``` if the ```Audio``` struct's
+    /// properties were configured incorrectly (ie. using manual construction
+    /// instead of ```Audio::new```) or if dependent alsa-sys library function
+    /// calls fail or unknown reasons.
     fn update(&mut self) -> Result<(), Box<dyn Error>> {
         unsafe {
             self.setup_handle()?;
@@ -127,8 +155,6 @@ impl Status for Audio {
             snd_mixer_selem_get_playback_switch(selem_ptr, SND_MIXER_SCHN_MONO, &mut muted);
 
             self.muted = muted == 0;
-            self.percent_volume =
-                (self.current_volume as f64 / self.max_volume as f64) as f32 * 100.0;
 
             self.tear_down_handle();
         }

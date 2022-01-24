@@ -1,3 +1,6 @@
+//! The ```time``` module provides a struct containing information related to the
+//! current time, such as the local timestamp.
+
 use std::error::Error;
 
 use chrono::{DateTime, Local};
