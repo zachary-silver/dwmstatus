@@ -2,6 +2,8 @@ use std::{
     collections::HashMap,
     io::Error,
     sync::{Arc, Mutex},
+    sync::mpsc::{Receiver},
+    sync::mpsc,
     thread,
 };
 
@@ -15,7 +17,8 @@ fn main() -> Result<(), Error> {
     let statuses = Arc::new(Mutex::new(get_statuses(&index_map)));
 
     let cloned_statuses = statuses.clone();
-    let app = thread::spawn(move || run_app(cloned_statuses));
+    let (tx, rx) = mpsc::channel();
+    let app = thread::spawn(move || run_app(cloned_statuses, rx));
 
     let audio_status_index = *index_map.get(&StatusType::Audio).unwrap();
 
@@ -28,14 +31,35 @@ fn main() -> Result<(), Error> {
                     eprintln!("{}", err);
                 }
                 output::output_statuses(statuses.iter());
-            }
+            },
             _ => break,
         }
     }
 
+    tx.send(0).unwrap();
     app.join().unwrap();
 
     Ok(())
+}
+
+fn run_app(statuses: Arc<Mutex<Vec<Box<dyn Status>>>>, rx: Receiver<u8>) {
+    let sleep_time = std::time::Duration::from_millis(1000);
+
+    loop {
+        let mut statuses = statuses.lock().unwrap();
+
+        update_statuses(statuses.iter_mut());
+        output::output_statuses(statuses.iter());
+
+        drop(statuses);
+
+        thread::sleep(sleep_time);
+
+        match rx.try_recv() {
+            Ok(_) => break,
+            Err(_) => continue,
+        }
+    }
 }
 
 fn get_status_to_index_map() -> HashMap<StatusType, usize> {
@@ -78,19 +102,4 @@ fn get_statuses(index_map: &HashMap<StatusType, usize>) -> Vec<Box<dyn Status>> 
             }
         })
         .collect()
-}
-
-fn run_app(statuses: Arc<Mutex<Vec<Box<dyn Status>>>>) {
-    let sleep_time = std::time::Duration::from_millis(1000);
-
-    loop {
-        let mut statuses = statuses.lock().unwrap();
-
-        update_statuses(statuses.iter_mut());
-        output::output_statuses(statuses.iter());
-
-        drop(statuses);
-
-        thread::sleep(sleep_time);
-    }
 }
