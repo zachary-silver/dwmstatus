@@ -10,8 +10,6 @@ use signal_hook::consts::signal::*;
 use dwmstatus::*;
 
 fn main() -> Result<(), Error> {
-    set_status_bar(&" ".repeat(8)); // cleans up any mess in dwm status bar
-
     let mut signals = signals::get_signals()?;
     let index_map = get_status_to_index_map();
     let statuses = Arc::new(Mutex::new(get_statuses(&index_map)));
