@@ -2,7 +2,7 @@ use std::{
     collections::HashMap,
     io::Error,
     sync::{Arc, Mutex},
-    sync::mpsc::{Receiver},
+    sync::mpsc::Receiver,
     sync::mpsc,
     thread,
 };
@@ -12,7 +12,6 @@ use signal_hook::consts::signal::*;
 use dwmstatus::*;
 
 fn main() -> Result<(), Error> {
-    let mut signals = signals::get_signals()?;
     let index_map = get_status_to_index_map();
     let statuses = Arc::new(Mutex::new(get_statuses(&index_map)));
 
@@ -22,6 +21,7 @@ fn main() -> Result<(), Error> {
 
     let audio_status_index = *index_map.get(&StatusType::Audio).unwrap();
 
+    let mut signals = signals::get_signals()?;
     for info in &mut signals {
         match info.signal {
             SIGUSR1 => {
