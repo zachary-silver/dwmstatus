@@ -21,7 +21,7 @@ where
         "{left_padding}{status_output}{right_padding}",
         left_padding = " ".repeat(8),
         status_output = status_outputs.join("  "),
-        right_padding = " ".repeat(6)
+        right_padding = " ".repeat(5)
     );
 
     set_status_bar(&output);
@@ -113,7 +113,7 @@ impl fmt::Display for memory::Memory {
             LIGHT_BLUE_COLOR_FORMAT,
             DEFAULT_COLOR_FORMAT,
             icon = '',
-            value = (1.0 - self.free_kibibytes as f32 / self.total_kibibytes as f32) * 100.0,
+            value = (1.0 - self.available_kibibytes as f32 / self.total_kibibytes as f32) * 100.0,
         )
     }
 }

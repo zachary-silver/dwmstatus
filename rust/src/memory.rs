@@ -6,14 +6,14 @@ use std::{error::Error, fs};
 use crate::Status;
 
 pub struct Memory {
-    pub free_kibibytes: u32,
+    pub available_kibibytes: u32,
     pub total_kibibytes: u32,
 }
 
 impl Memory {
     pub fn new() -> Self {
         Memory {
-            free_kibibytes: 0,
+            available_kibibytes: 0,
             total_kibibytes: 0,
         }
     }
@@ -37,7 +37,8 @@ impl Status for Memory {
             .unwrap()
             .parse()
             .unwrap();
-        self.free_kibibytes = lines
+        self.available_kibibytes = lines
+            .skip(1)
             .next()
             .unwrap()
             .split_whitespace()
